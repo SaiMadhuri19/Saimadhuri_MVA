@@ -44,7 +44,7 @@ print(correlation_actual_avg)
 ```
 
 
-![](ss/Screen Shot 2.png)<!-- -->
+![](ss/ScreenShot2.png)<!-- -->
 
 #Q2. Is there a relationship between record weather events
 # (record_min_temp, record_max_temp, record_min_temp_year, record_max_temp_year,
@@ -77,4 +77,4 @@ pairs(subset_data)
 
 
 ```
-![](ss/Screen Shot 3.png)<!-- -->
+![](ss/ScreenShot3.png)<!-- -->
