@@ -17,8 +17,8 @@ print(data)
 ![](ss/ScreenShot1.png)<!-- -->
 
 #Q1 How does the actual temperature (actual_mean_temp, actual_min_temp, actual_max_temp) correlate
-# with the average temperature (average_min_temp, average_max_temp)? 
-# Is there a strong positive correlation between the actual and average temperatures, indicating consistency in weather patterns over time?
+ with the average temperature (average_min_temp, average_max_temp)? 
+ Is there a strong positive correlation between the actual and average temperatures, indicating consistency in weather patterns over time?
 
 
 ```{r}
@@ -47,11 +47,11 @@ print(correlation_actual_avg)
 ![](ss/ScreenShot2.png)<!-- -->
 
 #Q2. Is there a relationship between record weather events
-# (record_min_temp, record_max_temp, record_min_temp_year, record_max_temp_year,
-# record_precipitation) and the actual weather conditions (actual_mean_temp, actual_min_temp,
-# actual_max_temp, actual_precipitation)? For example, do extreme record temperatures
-# or precipitation events coincide with higher or lower actual temperatures and 
-# precipitation on the same days or within the same periods?
+ (record_min_temp, record_max_temp, record_min_temp_year, record_max_temp_year,
+ record_precipitation) and the actual weather conditions (actual_mean_temp, actual_min_temp,
+ actual_max_temp, actual_precipitation)? For example, do extreme record temperatures
+ or precipitation events coincide with higher or lower actual temperatures and 
+ precipitation on the same days or within the same periods?
 
 
 
