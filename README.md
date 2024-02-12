@@ -1,4 +1,3 @@
-
 ```{r}
 # Provide the file path to your CSV file
 file_path <- "/Users/user/Downloads/KCLT.csv"
