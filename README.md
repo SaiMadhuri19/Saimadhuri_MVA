@@ -15,9 +15,7 @@ print(data)
 
 ```
 ![](Screen Shot 1.png)<!-- -->
-Screen Shot 1.png
 
-https://github.com/SaiMadhuri19/Saimadhuri_MVA/blob/af8d13afdb54f9c818c777fad1537111938a40b9/Screen%20Shot%201.png
 
 #Q1 How does the actual temperature (actual_mean_temp, actual_min_temp, actual_max_temp) correlate
 # with the average temperature (average_min_temp, average_max_temp)? 
