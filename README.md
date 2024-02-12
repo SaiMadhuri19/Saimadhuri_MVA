@@ -14,7 +14,7 @@ data <- read.csv(file_path)
 print(data)
 
 ```
-![](Screen Shot 1.png)<!-- -->
+![](ss/Screen Shot 1.png)<!-- -->
 
 
 #Q1 How does the actual temperature (actual_mean_temp, actual_min_temp, actual_max_temp) correlate
@@ -43,6 +43,9 @@ correlation_actual_avg <- correlation_matrix[1:3, 4:5]
 # Display correlation coefficients between actual and average temperatures
 print(correlation_actual_avg)
 ```
+
+
+![](ss/Screen Shot 2.png)<!-- -->
 
 #Q2. Is there a relationship between record weather events
 # (record_min_temp, record_max_temp, record_min_temp_year, record_max_temp_year,
@@ -75,3 +78,4 @@ pairs(subset_data)
 
 
 ```
+![](ss/Screen Shot 3.png)<!-- -->
