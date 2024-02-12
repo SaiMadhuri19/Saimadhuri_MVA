@@ -14,8 +14,8 @@ data <- read.csv(file_path)
 print(data)
 
 ```
-![](ss/Screen Shot 1.png)<!-- -->
 
+![](ss/Screen Shot 1.png)<!-- -->
 
 #Q1 How does the actual temperature (actual_mean_temp, actual_min_temp, actual_max_temp) correlate
 # with the average temperature (average_min_temp, average_max_temp)? 
