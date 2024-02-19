@@ -1,0 +1,161 @@
+---
+title: "MVA Assignment2"
+author: "Sai Madhuri"
+date: "2024-02-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+##### Assignment2
+```{r}
+file_path <- "/Users/user/Downloads/KCLT.csv"
+data <- read.csv(file_path)
+weather_data <- read.csv("/Users/user/Downloads/KCLT.csv")
+str(weather_data)
+```
+##### Univariate Analysis
+
+```{r}
+#How is the distribution of actual mean temperature?
+
+library(ggplot2)
+hist(weather_data$actual_mean_temp, 
+     main = "average temperature distribution",
+     xlab = "average temperature",
+     ylab = "number of occurences",
+     col = "lightblue",
+     border = "red")
+
+```
+
+#insights from the above histogram
+#From the above histogram we can understand the below points
+# 1.There are no extreme values(outliers) in the data
+# 2.There is a slight negative skewness(left-skewed) in the data
+# 3.The temperatures are normally distributed after 60.
+
+```{r}
+#At what range most of the mean temperatures are clustered?
+ggplot(weather_data, aes(x = actual_mean_temp)) +
+  geom_density() + 
+  labs(title = "Density Plot of mean temperature")
+
+```
+
+#From the density plot we got a smooth estimate of the probability density function which tells that most the average temperatures lies between the range 40-80.
+
+
+##### Bivariate Analysis
+```{r}
+#study the relationship between mean temperature and precipitation?
+ggplot(weather_data, aes(x = actual_mean_temp, y = record_precipitation)) +
+  geom_point(color = "pink") +
+  labs(title = "Mean temperature Vs Mean precipitation",
+       x = "Average temperature",
+       y = "precipitation") +  geom_smooth(method = "lm")
+
+
+```
+
+#Insights from the above visualization 
+As average temperatures rise, more evaporation occurs which in turn increases the overall precipitation on earth's surface.
+
+```{r}
+#compare the ranges of minimum and maximum temperatures?
+boxplot(weather_data[,3:4])
+boxplot(weather_data[,7:8])
+
+
+```
+#Box plot is an easy way to identify mean values and the dispersion of the datasets.
+
+```{r}
+# How the precipitation is varying over time?
+ggplot(weather_data, aes(x = date, y = record_precipitation))  +
+  geom_point(size = 3, 
+             color = "steelblue") +
+  labs(y = "Precipitation", 
+       x = "time",
+       title = "Precipitation change over time")
+```
+
+#From the above plot it is evident that precipitation mostly stays close to it's previous day records.
+
+
+```{r}
+file_path <- "/Users/user/Downloads/KCLT.csv"
+data <- read.csv(file_path)
+weather_data <- read.csv("/Users/user/Downloads/KCLT.csv")
+str(weather_data)
+```
+```{r}
+file_path <- "/Users/user/Downloads/KCLT.csv"
+data <- read.csv(file_path)
+weather_data <- read.csv("/Users/user/Downloads/KCLT.csv")
+str(weather_data)
+
+```
+```{r}
+file_path <- "/Users/user/Downloads/KCLT.csv"
+data <- read.csv(file_path)
+weather_data <- read.csv("/Users/user/Downloads/KCLT.csv")
+str(weather_data)
+
+```
+
+
+#Multivariate Analysis
+```{r}
+#Starplot
+stars(weather_data)
+
+
+```
+#From the starplot we can see all the columns and their respective values
+
+
+```{r}
+
+#How close the recorded temperatures are related to the measured average temperatures?
+pairs(weather_data[,5:8])
+library(GGally)
+ggscatmat(weather_data, columns=5:8)
+
+
+```
+#It shows there is a strong positive correlation between the recorded temperatures and the average temprature s measured.The measured values are accurate
+
+```{r}
+
+#Estimate the years that recorded maximum temperature?
+ggplot(weather_data, aes(x=record_max_temp_year, y=record_max_temp)) + geom_point()
+
+
+```
+
+#From the above graph we can estimate the years that had record maximun temperature i.e. 1953 and 2020
+
+```{r}
+
+#How are the independent variables(average and recorded values) related to each other?
+#Compute correlation matrix
+cor_matrix <- cor(weather_data[, 5:8])
+#Create a heatmap of the correlation matrix
+heatmap(cor_matrix, main = "Heatmap of Correlation Matrix")
+
+
+```
+
+#To show relationship between multiple variables heatmap is useful.The pale color shows low correlation and the dark color shows high correlation among the variables.
+
+
+
+
+
+
+
+
