@@ -1,0 +1,163 @@
+---
+title: "MVA3"
+author: "Sai Madhuri"
+date: "2024-02-25"
+output: html_document
+---
+#Using auto-mpg data set from kaggle(https://www.kaggle.com/datasets/uciml/autompg-dataset?resource=download) and it contains the following attributes
+
+mpg - Mileage/Miles Per Galon
+cylinders - the power unit of the car where gasoline is turned into power
+displacement - engine displacement of the car
+horsepower - rate of the engine performance
+weight - the weight of a car
+acceleration - the acceleration of a car
+model year- model year of the car
+origin - the origin of the car
+car - the name of the car
+
+#Here mpg is the dependent variable and horsepower,weight,acceleration,cylinders, displacement etc are the independent variables.
+
+```{r}
+file_path <- "/Users/user/Downloads/auto-mpg.csv"
+data <- read.csv(file_path)
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+str(autompg)
+
+```
+
+
+
+#considering mpg(miles per gallon) variable for univariate analysis
+
+```{r}
+mpg <- autompg$mpg
+
+```
+
+#calculating mean and variance of the mpg variable
+
+```{r}
+mpg_mean <- mean(mpg)
+mpg_mean
+mpg_variance <- var(mpg)
+mpg_variance
+
+```
+
+#Visualization of the mpg distribution
+
+```{r}
+hist(mpg, main = "Distribution of MPG", xlab = "Miles Per Gallon (MPG)", col = "skyblue", border = "black")
+
+```
+
+```{r}
+#Q-Q plot of mpg variable.
+qqnorm(autompg$mpg, main = "QQ Plot of mpg")
+qqline(autompg$mpg)
+
+```
+
+
+
+
+
+
+#By calculating mean of the mpg variable, we got an insight of the average fuel efficiency of the vehicles in the data set.
+
+#Variance values quantifies the spread of mpg values around the mean. Higher variance in this case indicates greater variability in fuel efficiency among the vehicles.
+
+#Histogram visualization of MPG variable provides a graphical representation of the distribution of fuel efficiency in the dataset.It helps us to identify any potential outliers.
+
+#QQ plot provides an indication of univariate normality of the dataset. In our case, most of the data points fall on the 45-degree reference line stating the data is normally distributed.
+
+#Hence with univariate mean and variance analysis we can access the typical fuel efficiency of vehicles in the dataset.
+
+
+
+
+--------------------------------------------------------------------------------------------------------------
+
+
+#####Multivariate mean and variance analysis
+
+```{r}
+
+
+y <- autompg[, c(1,3,5)]
+
+```
+
+#Calculating mean and covariance
+
+```{r}
+
+auto_colmean <- colMeans(y)
+auto_covariance <- cov(y)
+auto_d <- apply(y, MARGIN = 1, function(y)t(y - auto_colmean) %*% solve(auto_covariance) %*% (y - auto_colmean))
+#mean
+auto_colmean
+```
+
+```{r}
+#covariance
+
+auto_covariance
+
+```
+```{r}
+#Mahalanobis distances for each observation to the vector auto_d.
+auto_d
+```
+#The above analysis explains that there is a high negative covariance between mpg and weight which denotes there is a inverse relationship between them. As the weight of the vehicle increases mpg tends to decrease.A the same time mpg and displacement are also negatively related which means as the engine size(displacement) increases mpg tends to decrease.
+
+#Here multivariate mean and variance analysis helped to understand the relationship between different variables.
+
+```{r}
+#Visualization of the relationship between mpg and weight
+library(ggplot2)
+ggplot(autompg, aes(x = mpg, y = weight)) +
+  geom_point(color = "pink") +
+  labs(title = "mpg versus weight",
+       x = "miles per gallon(mpg)",
+       y = "weight") +  geom_smooth(method = "lm")
+
+
+```
+
+
+```{r}
+#Visualization of the relationship between mpg and displacement
+library(ggplot2)
+ggplot(autompg, aes(x = mpg, y = displacement)) +
+  geom_point(color = "pink") +
+  labs(title = "mpg versus displacement",
+       x = "miles per gallon(mpg)",
+       y = "displacement") +  geom_smooth(method = "lm")
+
+
+```
+```{r}
+#Visualization of the relationship between weight and displacement
+library(ggplot2)
+ggplot(autompg, aes(x = weight, y = displacement)) +
+  geom_point(color = "pink") +
+  labs(title = "weight versus displacement",
+       x = "weight",
+       y = "displacement") +  geom_smooth(method = "lm")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
