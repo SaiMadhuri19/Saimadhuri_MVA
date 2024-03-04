@@ -1,0 +1,179 @@
+---
+title: "MVA4_PCA"
+author: "Sai Madhuri"
+date: "2024-03-03"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+str(autompg)
+autompg$horsepower <- as.integer(autompg$horsepower)
+str(autompg)
+```
+
+```{r}
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+str(autompg)
+```
+
+```{r}
+autompg$horsepower <- as.numeric(autompg$horsepower)
+str(autompg)
+```
+
+
+
+
+```{r}
+#dropping non-numeric data
+auto_mpg <- autompg[, -7:-9]
+str(auto_mpg)
+```
+
+```{r}
+#Get the correlations between the variables 
+
+cor(auto_mpg, use = "complete.obs")
+```
+#Question1
+```{r}
+#Computing Principal Components
+auto_mpg <- na.omit(auto_mpg)
+auto_pca <- prcomp(auto_mpg,scale=TRUE)
+auto_pca
+
+```
+```{r}
+summary(auto_pca)
+```
+#summary of auto_pca it's evident that PC1 and PC2 plays an important role as they captures the highest proportion of variance.And we can discard the rest as it contributes less to the overall variance.Vehicles with higher values on PC1 tend to have higher fuel consumption (lower mpg), more cylinders, larger engine displacement, higher horsepower, and greater weight.
+
+
+```{r}
+#eigen values
+eigen_auto <- auto_pca$sdev^2
+names(eigen_auto) <- paste("PC",1:6,sep="")
+eigen_auto
+
+```
+
+```{r}
+sumlambdas <- sum(eigen_auto)
+sumlambdas
+
+```
+
+```{r}
+propvar <- eigen_auto/sumlambdas
+propvar
+
+```
+
+```{r}
+cumvar_auto <- cumsum(propvar)
+cumvar_auto
+
+```
+
+```{r}
+matlambdas <- rbind(eigen_auto,propvar,cumvar_auto)
+rownames(matlambdas) <- c("Eigenvalues","Prop. variance","Cum. prop. variance")
+round(matlambdas,4)
+
+```
+```{r}
+summary(auto_pca)
+
+```
+
+
+```{r}
+auto_pca$rotation
+
+```
+```{r}
+print(auto_pca)
+
+```
+
+#Screeplot
+```{r}
+screeplot(auto_pca, type = "line")
+```
+
+#variate representation of PC1
+```{r}
+#Graph PC1 and PC2 using x of prcomp()
+plot(auto_pca$x[,1],auto_pca$x[,2])
+```
+
+```{r}
+#Let's see how much variation in the original data PC1 accounts for
+pc1.var <- auto_pca$sdev^2
+pc1.var
+```
+
+```{r}
+#percentage of variation that PC1 accounts for
+pc1.var.per <- round(pc1.var/sum(pc1.var)*100, 1)
+pc1.var.per
+```
+
+```{r}
+#using bar plot to visualize the above percentage
+barplot(pc1.var.per, main="Scree Plot", xlab="Principal Component", ylab="Percent Variation")
+```
+#PC1 accounts for almost all the variation in the data this means that there is a big difference between the PC1 and PC2 clusters
+
+
+#Visualization
+
+```{r}
+#Visualizing PC's and the variation
+
+pca.data <- data.frame(Sample=rownames(auto_pca$x),
+  X=auto_pca$x[,1],
+  Y=auto_pca$x[,2])
+pca.data
+```
+
+```{r}
+#ggplot
+ggplot(data=pca.data, aes(x=X, y=Y, label=".")) +
+  geom_text() +
+  xlab(paste("PC1 - ", pc1.var.per[1], "%", sep="")) +
+  ylab(paste("PC2 - ", pc1.var.per[2], "%", sep="")) +
+  theme_bw() +
+  ggtitle("PCA Graph")
+ 
+```
+#PC1 accounts for 79.8% of variation in the original data
+#PC2 accounts for 12.1% of variation in the original data
+
+```{r}
+#eigen values
+eigen_auto <- auto_pca$sdev^2
+eigen_auto
+plot(log(eigen_auto), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
+
+ 
+```
+
+```{r}
+library(corrplot)
+library(factoextra)
+fviz_eig(auto_pca, addlabels = TRUE)
+
+```
+
+
+```{r}
+fviz_pca_var(auto_pca,col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+
+```
+
+
