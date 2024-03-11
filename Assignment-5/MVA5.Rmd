@@ -1,0 +1,195 @@
+---
+title: "MVA5"
+author: "Sai Madhuri"
+date: "2024-03-08"
+output: html_document
+---
+
+```{r}
+
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+str(autompg)
+autompg$horsepower <- as.integer(autompg$horsepower)
+cleaned_auto <- na.omit(autompg)
+str(autompg)
+
+```
+```{r}
+#load necessary libraries
+library(magrittr)
+library(NbClust)
+library(cluster)
+library(factoextra)
+
+
+```
+
+
+
+```{r}
+
+#Hierarchical Clustering- Dendrogram
+auto_featured <- cleaned_auto[, c("mpg","horsepower", "weight", "acceleration")]
+auto_clust <- auto_featured[1:10,]
+auto_mpg_scaled <- scale(auto_clust)
+dist_matrix <- dist(auto_mpg_scaled)
+
+#Clustering Single
+hc <- hclust(dist_matrix,method = "single")
+fviz_dend(hc,
+          cex = 0.5, # label size
+          rect = TRUE # Add rectangle around groups
+          )
+
+```
+
+
+
+
+
+```{r}
+#Default Clustering
+
+hc <- hclust(dist_matrix)
+plot(hc, hang = -1, cex = 0.6, main = "Dendrogram for Hierarchical Clustering")
+
+```
+
+
+
+
+
+
+
+```{r}
+#Average Clustering
+
+hc <- hclust(dist_matrix,method = "average")
+plot(hc, hang = -1, cex = 0.6, main = "Dendrogram for Hierarchical Clustering")
+
+```
+
+#By observing the above dendrogram's k=2 clusters will be sufficient.This is confirmed further with D index graphical representation.
+
+
+
+```{r}
+
+num_clusters <- 2
+clusters <- cutree(hc, k = num_clusters)
+
+# Membership for each cluster
+table(clusters)
+
+# Visualize cluster and membership using first two Principal Components
+pca_result <- prcomp(auto_clust,scale=TRUE)
+fviz_cluster(list(data = pca_result$x[,1:2], cluster = clusters))
+
+
+```
+
+
+```{r}
+#Non-Hierarchical Clustering(k-means)
+num_clusters <- 2
+kmeans_model <- kmeans(auto_clust, centers = num_clusters)
+
+# Membership for each cluster
+table(kmeans_model$cluster)
+
+```
+
+```{r}
+
+library(factoextra)
+# Visualize cluster and membership using first two Principal Components
+fviz_cluster(list(data = pca_result$x[, 1:2], cluster = kmeans_model$cluster))
+```
+
+
+```{r}
+# Visualize cluster centers for k-means
+fviz_cluster(kmeans_model, data = auto_clust, geom = "point", frame.type = "convex", 
+             pointsize = 2, fill = "white", main = "K-means Cluster Centers")
+
+
+
+```
+
+
+
+```{r}
+# Visualize cluster and membership using first two Principal Components for k-means
+pca_result <- prcomp(auto_clust, scale = TRUE)
+fviz_cluster(kmeans_model, data = pca_result$x[, 1:2], geom = "point", 
+             pointsize = 2, fill = "white", main = "K-means Clustering Result (PCA)")
+
+
+
+```
+
+```{r}
+library(cluster)
+library(factoextra)
+# Calculate silhouette information for k-means clustering
+sil <- silhouette(kmeans_model$cluster, dist(auto_clust))
+
+# Visualize the silhouette plot for k-means clustering
+fviz_silhouette(sil, main = "Silhouette Plot for K-means Clustering")
+
+
+
+```
+```{r}
+# Create a data frame with cluster membership
+data_clustered <- cbind(auto_clust, Cluster = kmeans_model$cluster)
+
+# Scatter plot of data points colored by cluster membership
+plot(data_clustered$mpg, data_clustered$horsepower,
+     col = data_clustered$Cluster, pch = 16, 
+     xlab = "mpg", ylab = "horsepower",
+     main = "Scatter Plot of Clustering")
+
+
+
+
+```
+
+#Clustering for entire auto-mpg data set
+
+```{r}
+res.hc <- auto_featured %>% scale() %>% dist(method = "euclidean") %>%
+  hclust(method = "ward.D2")
+
+fviz_dend(res.hc,
+          cex = 0.5)
+
+
+
+```
+```{r}
+res.nbclust <- auto_featured %>% scale() %>% NbClust(distance = "euclidean", min.nc = 2, max.nc = 10, method = "complete", index ="all") 
+
+
+
+```
+#The D index is a graphical method of determining the number of clusters. 
+                In the plot of D index, we seek a significant knee (the significant peak in Dindex
+                second differences plot) that corresponds to a significant increase of the value of
+                the measure. 
+ 
+******************************************************************* 
+* Among all indices:                                                
+* 12 proposed 2 as the best number of clusters 
+* 2 proposed 3 as the best number of clusters 
+* 1 proposed 7 as the best number of clusters 
+* 8 proposed 8 as the best number of clusters 
+* 1 proposed 10 as the best number of clusters 
+
+                   ***** Conclusion *****                            
+ 
+* According to the majority rule, the best number of clusters is  2 
+
+
+
+
