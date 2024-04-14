@@ -1,0 +1,130 @@
+---
+title: "MVA_MR"
+author: "Sai Madhuri"
+date: "2024-04-12"
+output: html_document
+---
+
+```{r}
+file_path <- "/Users/user/Downloads/auto-mpg.csv"
+data <- read.csv(file_path)
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+str(autompg)
+```
+```{r}
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+autompg$horsepower <- as.integer(autompg$horsepower)
+cleaned_auto <- na.omit(autompg)
+str(autompg)
+```
+
+
+
+### 1.Model Development
+```{r}
+auto<- cleaned_auto[,1:6]
+# Performing multiple regression on the dataset
+fit <- lm(mpg~ cylinders+displacement+horsepower+weight+acceleration, data=auto)
+#show the results
+summary(fit)
+```
+
+###In this step, we loaded the auto-mpg dataset and fitted a multiple regression model using the lm() function. The model predicts the "mpg" (miles per gallon) based on several predictor variables: cylinders, displacement, horsepower, weight, acceleration.
+
+### 2.Model Acceptance
+###From the summary Pr column it is evident that weight and horsepower are the two most significant variables. R-squared value explains the fact that cylinders,displacement,horsepower,weight, acceleration variables contribute to the 70% of total variance,which is not bad. p-value< 2.2e-16 is significant so the model is acceptable.
+
+```{r}
+coefficients(fit)
+```
+
+###From the above we get information about the dependent variable mpg in equation form y=b0+ b1x1 + b2x2+...+bnxn where intercept b0=4.626431e+01, and cofficients b1=-3.979284e-01,....
+
+```{r}
+confint(fit,level=0.95)
+```
+```{r}
+fitted(fit)
+```
+
+### 3.Residual Analysis
+
+```{r}
+library(GGally)
+```
+```{r}
+ggpairs(data=auto, title="auto-mpg")
+```
+
+```{r}
+plot(fit, which=1) # Residuals vs Fitted
+plot(fit, which=2) # Normal Q-Q plot
+
+```
+
+```{r}
+residuals <- residuals(fit)
+```
+
+```{r}
+#Plot residuals against fitted values to check for homoscedasticity
+plot_resid_fitted <- ggplot() +
+  geom_point(aes(x = fitted(fit), y = residuals)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(x = "Fitted Values", y = "Residuals",
+       title = "Residuals vs Fitted Values Plot") +
+  theme_minimal()
+print(plot_resid_fitted)
+
+```
+
+
+#The residual vs. fitted plot is a tool used to evaluate the assumptions and adequacy of a regression model. It helps to identify whether the model adequately captures the underlying relationships in the data or if there are issues that need to be addressed.
+#The plot shows a random scatter of points around zero, the model is likely appropriate.
+
+
+### 4.Prediction
+
+```{r}
+predict.lm(fit, data.frame(cylinders=8, displacement=310, horsepower=170, weight=4300,
+    acceleration=9) )
+```
+
+
+##Here when random values are given to the independent variables cylinders,displacement, horsepower, weight and acceleration, the model predicted the dependent variable mpg would be 12.79.
+
+
+### 5.Model Accuracy
+```{r}
+#Make predictions using the model
+predicted <- predict(fit, newdata = auto)
+```
+
+```{r}
+#Calculating RMSE by taking the square root of the mean of the squared differences between the actual values (auto$mpg) and the predicted values (predicted)
+rmse <- sqrt(mean((auto$mpg - predicted)^2))
+rmse
+```
+
+#RMSE measures the average deviation of predicted from actual values.
+
+#Conclusion: Here the moderate RMSE value 4.21 suggests that the model is having resonable accuracy but with noticeable deviations from actual values.
+
+### Some Visualizations
+
+```{r}
+library(car)
+#Nonlinearity
+# component + residual plot
+crPlots(fit)
+```
+
+
+
+```{r}
+# plot studentized residuals vs. fitted values
+library(car)
+spreadLevelPlot(fit)
+```
+
+
