@@ -1,0 +1,129 @@
+---
+title: "MVA9"
+author: "Sai Madhuri"
+date: "2024-04-25"
+output: html_document
+---
+#DATASET :The Auto MPG dataset contains information about various car models and their fuel efficiency. It includes attributes such as cylinders, displacement, horsepower, weight, acceleration, model year, and origin. 
+#1.mpg: Miles per gallon, the target variable representing fuel efficiency.
+#2.cylinders: Number of cylinders in the engine (typically 4, 6, or 8).
+#3.displacement: Engine displacement in cubic inches.
+#4.horsepower: Engine horsepower.
+#5.weight: Vehicle weight in pounds.
+#6.acceleration: Time taken for the vehicle to accelerate from 0 to 60 miles per hour (mph).
+#7.model year: Year of manufacturing (e.g., 70 for 1970, 71 for 1971, etc.).
+#8.origin: Origin of the car (1 for American, 2 for European, 3 for Japanese).
+#9.car name: Name of the car model.
+
+
+
+```{r}
+
+file_path <- "/Users/user/Downloads/auto-mpg.csv"
+data <- read.csv(file_path)
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+str(autompg)
+
+```
+
+```{r}
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+autompg$horsepower <- as.integer(autompg$horsepower)
+auto <- na.omit(autompg)
+str(auto)
+```
+
+
+```{r}
+# Creating a categorical column for the predictor variable autompg based on a threshold.
+auto$mpg_class <- ifelse(auto$mpg > 20, "High MPG", "Low MPG")
+```
+
+
+```{r}
+# Splitting the dataset into 75% training and 25% test sets
+smp_size_raw <- floor(0.75 * nrow(auto))
+train_ind_raw <- sample(nrow(auto), size = smp_size_raw)
+train_raw.df <- auto[train_ind_raw, ]
+test_raw.df <- auto[-train_ind_raw, ]
+```
+
+### 1.Model Development
+```{r}
+#install.packages("MASS")
+library(MASS)
+#Fitting LDA model on the training set
+lda_model <- lda(mpg_class ~ cylinders + displacement + horsepower + weight + acceleration, data = train_raw.df)
+lda_model
+```
+#Prior Probabilities denote proportion of each class before modelling in our case high-mpg is more prevalent in the training set.
+#Faster acceleration is seen in high-mpg vehicles and heavy weight vehicles have low-mpg.
+#vehicles with more cylinders, larger displacement, higher horsepower, and heavier weight tend to be in the 'Low MPG' class. Vehicles with quicker acceleration tend to be in the 'High MPG' class
+#Cylinders is the most significant coefficient.The coefficients suggest which variables most strongly contribute to classifying 'Low MPG' and 'High MPG'.
+
+### 2.Model Acceptance
+```{r}
+summary(lda_model)
+
+```
+#with significant coefficients and no obvious issues with class imbalance, the LDA model is likely acceptable. Here only cylinders variable plays a vital role. LDA model is moderately acceptable.
+
+```{r}
+plot(lda_model,dimen = 1, type = "b")
+
+```
+
+```{r}
+plot(lda_model)
+
+```
+
+### 3.Residual Analysis
+```{r}
+# Residual Analysis 
+residuals(lda_model)
+
+```
+
+#This suggests there may be an underlying issue with overfitting or data inconsistency.
+
+### 4.Prediction
+```{r}
+prediction <- predict(lda_model, test_raw.df)
+prediction
+```
+#This prediction given us an idea about how the model classifies the test data.
+
+### 5.Model Accuracy
+```{r}
+# Predict on the test set
+predicted_classes <- predict(lda_model, test_raw.df)$class
+
+# Create a confusion matrix to understand misclassifications
+confusion_matrix <- table(predicted_classes, test_raw.df$mpg_class)
+confusion_matrix 
+
+accuracy <- sum(predicted_classes == test_raw.df$mpg_class) / nrow(test_raw.df)
+accuracy 
+
+```
+#This model gives 90% accuracy for the autompg dataset with high-mpg and low-mpg labels which is a good sign.
+
+### Visualizations
+```{r}
+str(train_raw.df)
+#install.packages("klaR") 
+library(klaR)
+
+```
+
+```{r}
+attach(train_raw.df)
+train_raw.df$mpg_class <- factor(train_raw.df$mpg_class)
+partimat( mpg_class ~ cylinders + displacement + horsepower + weight + acceleration , data = train_raw.df, method="lda")
+
+
+```
+
+
+
