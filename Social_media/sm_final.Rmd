@@ -1,0 +1,708 @@
+---
+title: "Social_media_final"
+author: "Sai Madhuri"
+date: "2024-04-28"
+output: html_document
+---
+
+
+```{r}
+library(readxl)
+sm <- read_excel("/Users/user/Downloads/social_media_cleaned.xlsx")
+str(sm)
+```
+
+### 1.Data Collection Process
+#The data was generated based on the usage of social_media apps (in hours) of our MVA class students and average of three weeks data was consolidated and taken for the analysis.
+
+#Dependent Variables:Trouble_falling_asleep,productivity,Tired_morning,weekenergy 
+
+#Independent Variables:Instagram,LinkedIn,SnapChat,Twitter,Whatsapp,youtube,OTT,Reddit
+
+#About the dataset
+* Character ID: Unique ID of each student's data entry.
+* Instagram: Instagram app usage duration measured in hours.
+* LinkedIn:LinkenIN app usage duration measured in hours.
+* Snapchat:Snapchat app usage duration measured in hours.
+* Twitter Usage:Twitter app usage duration measured in hours.
+* Whatsapp Usage:Whatsapp app usage duration measured in hours.
+* Youtube Usage:Youtube app usage duration measured in hours.
+* OTT Usage: Over-the-Top(OTT) media services usage duration in hours.
+* Reddit Usage:Reddit app usage duration measured in hours.
+* Trouble Falling Asleep: Indicates whether the student reported having trouble falling asleep (0: No, 1: Yes).
+* Productivity: student's mood and productivity level(0: Bad, 1: Good)
+* Tiredness upon Waking Up in the Morning: Indicates the level of tiredness the student reported upon waking up in the morning(0: Low, 1: High).
+* Weekenergy: Indicates the level of energy the student felt entire week measured on a scale of 5.(where 5 :High and 1:low)
+
+### Goal of my analysis
+To understand the impact of various social media apps usage on the lifestyle pattern of the students.
+
+### 2.Exploratory Data Analysis and Visualizations
+```{r}
+sm1 <- sm[, 2:13]
+sm1
+```
+
+```{r}
+summary(sm1)
+```
+
+#The Summary Statistics helps us to understand the spread of the data.
+
+#Calculating mean and covariance
+```{r}
+
+colmean <- colMeans(sm1)
+colmean
+
+
+```
+```{r}
+
+
+covariance <- cov(sm1)
+covariance
+
+```
+
+```{r}
+#Compute correlation matrix
+cor_matrix <- cor(sm[, 2:13])
+#Create a heatmap of the correlation matrix
+heatmap(cor_matrix, main = "Heatmap of Correlation Matrix")
+```
+
+#From covariance we can understand how two variables are linearly related. A good positive covariance indicates a strong linear relationship between the variables. I could see weekenergy and LinkedIn app usage having a good linear relationship based on covariance. This affirmation was made strong by the heatmap of correlation matrix where the pale color shows low correlation and the dark color shows high correlation among the variables.
+
+
+```{r}
+#Mahalanobis distances for each observation
+sm_d <- apply(sm1, MARGIN = 1, function(sm1)t(sm1 - colmean) %*% solve(covariance) %*% (sm1 - colmean))
+sm_d
+```
+
+#Mahalanobis distance calculates the distance between each observation to the mean of the distribution.From mean my observation is at a distance of 13.55. 1st,10th,13th and 15th observations are far away from the mean in our dataset.Mahalanobis distance helped me to estimate the possible outliers.
+
+```{r}
+#starplot
+stars(sm1)
+```
+
+#with starplot we can immediately identify the observations with similarities. Here 3,4,6,9,12,14,17,19 users pattern of social media apps usage are a bit similar.
+
+```{r}
+pairs(sm1)
+```
+
+
+```{r}
+#Boxplot of the apps
+boxplot(sm[,2:9])
+```
+
+#Boxplot helps us to understand the central tendendency, spread, range and outliers in the dataset.I could see instagram and whatsapp are very predominant among all the apps.
+
+### Focusing on instagram and whatsapp effect on dependent variables
+
+#Visualization of Instagram and whatsapp impact on entire weeks energy
+```{r}
+library(ggplot2)
+ggplot(sm1, aes(x =Instagram, fill = factor(weekenergy))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Plot of Instagram usage and weekenergy",
+       x = "Instagram Usage",
+       y = "Density",
+       fill = "entire weeks energy")
+
+
+```
+
+
+```{r}
+ggplot(sm1, aes(x =Whatsapp, fill = factor(weekenergy))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Plot of Whatsapp usage and weekenergy",
+       x = "Whatapp Usage",
+       y = "Density",
+       fill = "Entire weeks energy")
+
+
+```
+
+
+#We could see that people who are spending less time on instagram and whatsapp are having more energy the entire week.
+
+
+#Visualization of Instagram and whatsapp impact on Trouble_falling_asleep
+
+```{r}
+library(ggplot2)
+ggplot(sm1, aes(x =Instagram, fill = factor(sm1$Trouble_falling_asleep))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Plot of Instagram usage and sleep pattern",
+       x = "Instagram Usage",
+       y = "Density",
+       fill = "trouble in falling asleep")
+
+
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(sm1, aes(x =Whatsapp, fill = factor(sm1$Trouble_falling_asleep))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Plot of Whatsapp usage and sleep pattern",
+       x = "Whatsapp Usage",
+       y = "Density",
+       fill = "trouble in falling asleep")
+
+
+```
+
+
+#There is a high impact of whatsapp and instagram usage on sleep pattern of the students.
+
+#Visualization of Instagram and whatsapp impact on Tired mornings
+```{r}
+library(ggplot2)
+ggplot(sm1, aes(x =Instagram, fill = factor(sm1$Tired_morning))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Plot of Instagram usage and morning tiredness",
+       x = "Instagram Usage",
+       y = "Density",
+       fill = "Tired Morning")
+
+
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(sm1, aes(x =Whatsapp, fill = factor(sm1$Tired_morning))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Plot of Whatsapp usage and morning tiredness",
+       x = "Whatsapp Usage",
+       y = "Density",
+       fill = "Tired Morning")
+
+
+```
+
+
+#Instagram and whatsapp usage having a direct impact on tired mornings.
+
+##Visualization of Instagram and whatsapp impact on productivity.
+```{r}
+library(ggplot2)
+ggplot(sm1, aes(x =Instagram, fill = factor(sm1$productivity))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Plot of Instagram usage and productivity",
+       x = "Instagram Usage",
+       y = "Density",
+       fill = "productivity")
+
+
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(sm1, aes(x = Whatsapp, fill = factor(sm1$productivity))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Plot of Whatsapp usage and productivity",
+       x = "Whatsapp Usage",
+       y = "Density",
+       fill = "productivity")
+
+
+```
+
+
+#Interestingly, stundents are productive even with high usage of instagram and whatsapp. This tells me a fact that instagram and whatsapp were used by students for good purposes also like learning new trends in technology and social world.
+
+
+### Application of different MVA models and Insights.
+
+### PCA
+```{r}
+sm_pca <- prcomp(sm1[1:8],scale=TRUE) 
+sm_pca
+```
+
+#From the PCA analysis, we can find the association of different apps with each principal components using which we can reduce the dimensionality of the dataset. Higher absolute values (close to 1) suggest a stronger relationship, while values closer to 0 indicate a weaker association
+
+#For example snapchat app has strong association with PC3
+
+```{r}
+summary(sm_pca)
+library(factoextra)
+fviz_eig(sm_pca, addlabels = TRUE)
+```
+
+#Proportion of total variance here tells about the variance explained by the principal components.
+
+#From the screeplot it is evident that to cover variance above 90% we need to consider PC1 to PC6. I could interpret that PCA is not that beneficial for the social media dataset because we are allowed to discard only PC7 and PC8
+
+```{r}
+
+fviz_pca_var(sm_pca,col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+```
+
+#From the above plot we can understand the usage of Twitter and Reddit apps are very similar among all. I could tell students are not using twitter and reddit apps that much.
+
+
+### Factor Analysis
+
+```{r}
+# load library for factor analysis
+library(ggplot2)
+library(psych)
+
+```
+#Parallel analysis
+```{r}
+fa.parallel(sm1[1:8])
+```
+
+
+```{r}
+fit.pc <- principal(sm1[1:8], nfactors=2, rotate="varimax")
+fit.pc
+```
+
+#High absolute values (close to 1) indicate a strong relationship between the variable and the factor.
+#h2 explains how much variance of the variables are explained by the factors.
+#u2 indicates the amount of variance not explained by the factors
+#Reddit,OTT, twitter are better explained by RC2 and all other apps like Instagram,LinkedIn,SnapChat,Whatsapp,youtube are well explained by RC1.
+
+```{r}
+round(fit.pc$values, 3)
+```
+
+```{r}
+fit.pc$loadings
+```
+```{r}
+# Communalities
+fit.pc$communality
+
+```
+```{r}
+# Rotated factor scores, Notice the columns ordering: RC1, RC2
+fit.pc
+fit.pc$scores
+
+```
+```{r}
+fa.plot(fit.pc) # See Correlations within Factors
+
+```
+
+```{r}
+#Factors that contribute to RC1 and RC2 Visualization
+fa.diagram(fit.pc)
+
+```
+
+
+#some visualizations using the factors
+
+```{r}
+#very simple structure visualization
+vss(sm1)
+
+```
+
+```{r}
+# Computing Correlation Matrix
+corrm.sm <- cor(sm1)
+corrm.sm
+
+```
+```{r}
+plot(corrm.sm)
+
+```
+```{r}
+social_pca <- prcomp(sm1[1:8], scale=TRUE)
+summary(social_pca)
+
+```
+
+
+```{r}
+plot(social_pca)
+
+```
+
+
+#Biplot Visualization
+```{r}
+biplot(fit.pc)
+
+```
+
+
+
+#I feel factor analysis is not beneficial for the social media data because I observed that we are missing the most part of the uniqueness of these apps by including factors and we are able to capture only a small portion of variances by using factors.
+#And parallel analysis screeplot indicated that the ideal number of factors for the social media data is zero.
+#From the component analysis we got similar results to PCA, where the apps like Instagram, whatsapp/wechat, LinkedIn, Youtube, Snapchat usages are a bit similar and high compared to OTT, Twitter and Reddit.
+
+### Cluster Analysis
+
+```{r}
+#Hierarchical Clustering- Dendrogram
+sm_scaled <- scale(sm1)
+dist_matrix <- dist(sm_scaled)
+
+#Clustering Single
+hc <- hclust(dist_matrix,method = "single")
+fviz_dend(hc)
+
+```
+```{r}
+#Default Clustering
+
+hc <- hclust(dist_matrix)
+plot(hc, hang = -1, cex = 0.6, main = "Dendrogram for Hierarchical Clustering")
+
+```
+```{r}
+#Average Clustering
+
+hc <- hclust(dist_matrix,method = "average")
+plot(hc, hang = -1, cex = 0.6, main = "Dendrogram for Hierarchical Clustering")
+
+```
+
+#By observing the above dendrogram's k=2 clusters will be sufficient to group the entire students of the class.This is confirmed further with D index graphical representation.
+
+```{r}
+#Non-Hierarchical Clustering(k-means)
+num_clusters <- 2
+kmeans_model <- kmeans(sm_scaled, centers = num_clusters)
+
+# Membership for each cluster
+table(kmeans_model$cluster)
+```
+
+
+```{r}
+
+
+# Principal Components
+pca_result <- prcomp(sm_scaled,scale=TRUE)
+pca_result
+
+
+
+# Visualize cluster and membership using first two Principal Components
+fviz_cluster(list(data = pca_result$x[, 1:2], cluster = kmeans_model$cluster))
+```
+
+
+#This plot visualizes clusters and their memberships using the first two principal components.
+
+```{r}
+# Visualize cluster centers for k-means
+fviz_cluster(kmeans_model, data = sm_scaled, geom = "point", frame.type = "convex", 
+             pointsize = 2, fill = "white", main = "K-means Cluster Centers")
+```
+
+
+
+```{r}
+# Visualize cluster and membership using first two Principal Components for k-means
+pca_result <- prcomp(sm_scaled, scale = TRUE)
+fviz_cluster(kmeans_model, data = pca_result$x[, 1:2], geom = "point", 
+             pointsize = 2, fill = "white", main = "K-means Clustering Result (PCA)")
+```
+
+#This visualization helps to understand how the data points are grouped into clusters based on their similarities, as revealed by the PCA analysis.
+
+```{r}
+library(cluster)
+# Calculate silhouette information for k-means clustering
+sil <- silhouette(kmeans_model$cluster, dist(sm_scaled))
+
+# Visualize the silhouette plot for k-means clustering
+fviz_silhouette(sil, main = "Silhouette Plot for K-means Clustering")
+```
+
+#A higher silhouette width indicates better separation of clusters, while negative values suggest that points might be assigned to the wrong clusters. This plot helps in determining the optimal number of clusters for k-means clustering and assessing the overall clustering performance.
+
+```{r}
+library(dplyr)
+library(NbClust)
+
+#optimal cluster method/visualization
+res.nbclust <- sm_scaled[,1:8] %>% scale() %>% NbClust(distance = "euclidean", min.nc = 2, max.nc = 10, method = "complete", index ="all") 
+```
+
+#The Dindex suggests the optimal number of clusters according to majority rule is 2.
+#Through cluster analysis I am able to figure out users whose social media usage pattern is similar to mine. cluster analysis helped to group students based on hidden patterns of their social media usage based on which any further analysis can be done.
+
+### Regression
+
+#Multiple Regression
+
+### 1.Model Development
+```{r}
+
+#Performing multiple regression on the dataset
+fit <- lm(sm1$Trouble_falling_asleep ~ Instagram+ LinkedIn + SnapChat + Twitter+ Whatsapp + youtube + OTT + Reddit , data=sm1)
+#show the results
+summary(fit)
+```
+
+#From the above summary we got p-value 0.2639 which indicates the coefficient of the predictor variable associated with this p-value is not statistically significant.The model explains approximately 49% of the variability in “trouble_falling_asleep” as indicated by the multiple R-squared value. Most of the coefficients are not statistically significant indicating weak evidence of association.
+
+```{r}
+coefficients(fit)
+```
+#From the above we get information about the dependent variable in equation form y=b0+ b1x1 + b2x2+...+bnxn where intercept b0=0.029, and cofficients b1=0.0700,....
+
+#The positive coefficients for Instagram,Sanapchat, Twitter,YouTube suggest a potential positive association with trouble_falling_asleep, while negative coefficients for LinkedIn, Whatsapp,OTT and Reddit imply a negative association. The intercept represents the estimated troulbe in sleep score when all predictors are zero.
+
+
+```{r}
+fitted(fit)
+```
+### Residual Analysis
+
+```{r}
+library(GGally)
+```
+```{r}
+ggpairs(data=sm1, title="Social-Media")
+```
+
+```{r}
+plot(fit, which=1) # Residuals vs Fitted
+plot(fit, which=2) # Normal Q-Q plot
+
+```
+
+
+#In an ideal normal distribution QQ plot, the points would fall along a straight diagonal line. However, in this plot, the points show some deviation from the diagonal,this suggests the data may not fully conform to a normal distribution and could indicate the presence of outliers or other non-normal characteristics.Identifying departures from normality can inform the choice of appropriate modeling techniques.
+
+
+```{r}
+residuals <- residuals(fit)
+residuals
+```
+
+```{r}
+#Plot residuals against fitted values to check for homoscedasticity
+plot_resid_fitted <- ggplot() +
+  geom_point(aes(x = fitted(fit), y = residuals)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(x = "Fitted Values", y = "Residuals",
+       title = "Residuals vs Fitted Values Plot") +
+  theme_minimal()
+print(plot_resid_fitted)
+
+```
+#The residual vs. fitted plot is a tool used to evaluate the assumptions and adequacy of a regression model. It helps to identify whether the model adequately captures the underlying relationships in the data or if there are issues that need to be addressed.
+#The plot shows a pattern between the fitted values and the residuals around zero, the model is likely not appropriate.
+
+### Prediction
+
+```{r}
+predict.lm(fit, data.frame(Instagram=8, LinkedIn=5, SnapChat=4, Twitter=4,
+    Whatsapp=4, youtube=8, OTT=3, Reddit=4 ))
+```
+
+#Here the model predicted the trouble falling asleep value for the given values.
+
+### Model Accuracy
+```{r}
+#Make predictions using the model
+predicted <- predict(fit, newdata = sm1)
+```
+
+```{r}
+#Calculating RMSE by taking the square root of the mean of the squared differences between the actual values and the predicted values (predicted)
+rmse <- sqrt(mean((sm1$Trouble_falling_asleep - predicted)^2))
+rmse
+```
+
+#Low RMSE(0.335) between 0 and 1 indicates that the models predictions are quite accurate, with small deviations from the actual values.In this case, an RMSE value of 0.335 indicates that, on average, the model’s predictions deviate from the observed values by approximately 0.335 units. A lower RMSE value indicates better performance of the model.
+
+### Some Visualizations
+
+```{r}
+library(car)
+#Nonlinearity
+# component + residual plot
+crPlots(fit)
+```
+```{r}
+# plot studentized residuals vs. fitted values
+library(car)
+spreadLevelPlot(fit)
+```
+
+#The plot reveals patterns in the spread of residuals across the range of fitted values. If residuals are evenly spread, it suggests homoscedasticity.  The upward trend of the curve suggests increasing variability of residuals as fitted values rise, indicating potential heteroscedasticity.
+
+
+#Logistic Regression
+
+#Logistic regression is a statistical method used for binary classification problems. It predicts the probability that a given observation belongs to one of two classes.
+#It gives the relationship between a binary dependent variable and independent variables.
+
+```{r}
+#Load required Libraries
+library(dplyr)
+library(tidyr)
+library(MASS)
+```
+
+```{r}
+
+lr <- glm(sm1$Trouble_falling_asleep ~ Instagram+ LinkedIn + SnapChat + Twitter+ Whatsapp + youtube + OTT + Reddit, data=sm1, family="binomial")
+summary(lr)
+
+```
+
+#The logistic regression suggests that there is no significant predictor of trouble falling asleep. The intercept indicates a baseline of approximately -4.69 when all independent variables are zero.The model’s fit is modest, with slightly lower residual deviance compared to null deviance, and an AIC of 29.5. #From the above it is evident that the model is not acceptable since the independent variables are not contributing significantly to the variation in the dependent variable.
+
+```{r}
+residuals(lr)
+```
+```{r}
+plot(lr, which = 1)
+```
+
+#There is a fixed pattern in the residuals vs fitted plot which means that the selected independent variables will not explain the dependent variable well.
+
+```{r}
+anova(lr)
+```
+
+```{r}
+#"Pseudo R-squared" and its p-value
+ll.null <- lr$null.deviance/-2
+ll.proposed <- lr$deviance/-2
+(ll.null - ll.proposed) / ll.null
+```
+
+#The pseudo R-squared value resulting from the provided code is 0.56, it suggests that the proposed model does not fit the data perfectly. This indicates that all variability in the response variable is not well explained by the predictors, implying a highly significant improvement in model.
+
+```{r}
+predicted.data <- data.frame(probability.of.hd=lr$fitted.values, Trouble_falling_asleep = sm1$Trouble_falling_asleep)
+predicted.data <- predicted.data[order(predicted.data$probability.of.hd, decreasing=FALSE),]
+predicted.data$rank <- 1:nrow(predicted.data)
+
+ggplot(data=predicted.data, aes(x=rank, y=probability.of.hd)) +
+  geom_point(aes(color=Trouble_falling_asleep), alpha=1, shape=4, stroke=2) +
+  xlab("Index") +
+  ylab("Predicted probability of getting in sleeping")
+```
+
+
+#The plot is a graphical representation of a predictive model, depicting the probability of trouble falling asleep against an index.The dotted line likely represents a fitted curve, showing how the probability changes across different index values, with a steep incline around the threshold(15). This visualization could be used to understand factors influencing trouble in sleep.
+
+
+```{r}
+library(caret)
+pdata <- predict(lr,newdata=sm1,type="response" )
+pdata
+pdataF <- as.factor(ifelse(test=as.numeric(pdata>0.5) == 0, yes="0", no="1"))
+sm1$Trouble_falling_asleep <- factor(sm1$Trouble_falling_asleep, levels = c("0", "1"))
+levels(pdataF) <- levels(sm1$Trouble_falling_asleep)
+confusionMatrix(pdataF, sm1$Trouble_falling_asleep)
+```
+
+
+```{r}
+library(pROC)
+roc(sm1$Trouble_falling_asleep, lr$fitted.values, plot=TRUE)
+```
+
+
+
+#Discriminant Analysis
+
+```{r}
+# Splitting the dataset into 75% training and 25% test sets
+smp_size_raw <- floor(0.75 * nrow(sm1))
+train_ind_raw <- sample(nrow(sm1), size = smp_size_raw)
+train_raw.df <- sm[train_ind_raw, ]
+test_raw.df <- sm[-train_ind_raw, ]
+```
+
+### 1.Model Development
+```{r}
+lda_model <- lda(train_raw.df$Trouble_falling_asleep ~ Instagram + LinkedIn + SnapChat + Twitter + Whatsapp  + youtube + OTT + Reddit, data = train_raw.df)
+
+
+lda_model
+
+```
+
+
+#Prior probability shows the class distribution of each class in the training data.The data is classified into 2 groups based on the peoples trouble in sleep and LD1 having few significant coefficients.Among the groups 0 and 1 people facing trouble in falling asleep is the most predominant group.
+#Coefficients of Linear Discriminants: The coefficients of linear discriminants represent the weights assigned to each predictor variable in the discriminant function.
+
+
+```{r}
+summary(lda_model)
+```
+
+
+##No obvious issues with class imbalance, the LDA model is likely acceptable.
+
+```{r}
+
+plot(lda_model)
+```
+
+###Residual Analysis
+```{r}
+residuals(lda_model)
+```
+
+#LDA does not inherently produce residuals
+
+###Prediction
+```{r}
+prediction <- predict(lda_model, test_raw.df)
+prediction
+```
+
+###Accuracy
+
+```{r}
+# Predict on the test set
+predicted_classes <- predict(lda_model, test_raw.df)$class
+
+# Create a confusion matrix to understand misclassifications
+confusion_matrix <- table(predicted_classes, test_raw.df$Trouble_falling_asleep)
+confusion_matrix 
+
+accuracy <- sum(predicted_classes == test_raw.df$Trouble_falling_asleep) / nrow(test_raw.df)
+accuracy 
+
+```
+
+#Acuuracy is moderately acceptable 
+
+```{r}
+str(train_raw.df)
+```
+```{r}
+library(klaR)
+attach(train_raw.df)
+train_raw.df$Trouble_falling_asleep <- factor(train_raw.df$Trouble_falling_asleep)
+partimat( Trouble_falling_asleep ~Instagram+LinkedIn+SnapChat+Twitter+youtube+OTT+Reddit, data=train_raw.df, method="lda")
+```
+
+### Learnings and Takeaway
+I can conclude that by using MVA models I am able to compute the effect of each independent varible's on the dependent variables.This really helped me to understand the impact of various social media apps usage on the healthy/unhealthy lifestyle of the students which is my main goal of conducting this analysis. From exploratory data analysis it is clearly evident that Instagram and Whatsapp are the two predominant apps among students and hours spent on it having a direct relationship with sleep deprivation, diminished productivity, poor energy and tiredness. 
+And also it was proven from my Exploratory data analysis that many students are using social media apps for a good reason. Either good or bad having control over the usage of social media apps is beneficial for both physical and mental health of the students.
+
+
