@@ -1,0 +1,1030 @@
+---
+title: "Sai_Final_Project"
+author: "Sai Madhuri"
+date: "2024-04-28"
+output: html_document
+---
+
+
+### 1.Data Collection Process
+
+#The "Auto MPG" dataset is derived from the U.S. Environmental Protection Agency (EPA), focusing on fuel efficiency data from 1970 to 1982. Here's an explanation of the collection process:
+
+#Source: The EPA collected the data to evaluate fuel economy during the oil crisis era.
+#Scope: It covers vehicles from multiple origins (USA, Europe, and Japan).
+#Variables: There are nine attributes: miles per gallon (MPG), cylinders, displacement, horsepower, weight, acceleration, model year, origin, and car name.
+#Purpose: To assess the fuel efficiency of cars, addressing environmental and energy concerns
+
+
+#The Auto MPG dataset contains information about various car models and their fuel efficiency. It includes attributes such as cylinders, displacement, horsepower, weight, acceleration, model year, and origin. 
+#1.mpg: Miles per gallon, the target variable representing fuel efficiency.
+#2.cylinders: Number of cylinders in the engine (typically 4, 6, or 8).
+#3.displacement: Engine displacement in cubic inches.
+#4.horsepower: Engine horsepower.
+#5.weight: Vehicle weight in pounds.
+#6.acceleration: Time taken for the vehicle to accelerate from 0 to 60 miles per hour (mph).
+#7.model year: Year of manufacturing (e.g., 70 for 1970, 71 for 1971, etc.).
+#8.origin: Origin of the car (1 for American, 2 for European, 3 for Japanese).
+#9.car name: Name of the car model.
+
+#Considering independent variables cylinders,displacement,horsepower,weight,acceleration my aim is to analyze the variations in dependent variable mpg.
+
+```{r}
+
+file_path <- "/Users/user/Downloads/auto-mpg.csv"
+data <- read.csv(file_path)
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+str(autompg)
+
+```
+
+#Simple data cleaning
+```{r}
+autompg <- read.csv("/Users/user/Downloads/auto-mpg.csv")
+autompg$horsepower <- as.integer(autompg$horsepower)
+auto <- na.omit(autompg)
+str(auto)
+```
+
+### 2.Exploratory Data Analysis
+#summary statistics
+```{r}
+summary(auto)
+```
+
+#Summary statistics explains us to understand the spread of the data.
+
+```{r}
+# Check for missing values
+colSums(is.na(auto))
+
+```
+```{r}
+# Distribution of MPG
+library(ggplot2)
+ggplot(auto, aes(x = mpg)) +
+  geom_histogram(binwidth = 2, fill = "steelblue", color = "black") +
+  labs(title = "Distribution of MPG")
+
+```
+
+#Insights from the above histogram
+#1.There are no extreme values(outliers) in the data #2.Mpg is slightly normal distributed.
+
+
+```{r}
+# Densityplot of MPG
+ggplot(auto, aes(x = mpg)) +
+  geom_density() + 
+  labs(title = "Density Plot of mpg")
+
+```
+
+
+#From the density plot we got a smooth estimate of the probability density function which tells that most of the mpg values in the dataset are in the range of 10-40. And yes the values are distributed normally.
+
+```{r}
+# Analyzing the relationship between Mpg and horsepower
+ggplot(auto, aes(x = mpg, y = horsepower)) +
+  geom_point(color = "pink") +
+  labs(title = "mpg Vs horsepower",
+       x = "mpg",
+       y = "horsepower") +  geom_smooth(method = "lm")
+
+```
+
+#with increase in horsepower, mpg decreases with a linear trend.
+
+```{r}
+# Analyzing the relationship between Mpg and weight
+ggplot(auto, aes(x = mpg, y = weight)) +
+  geom_point(color = "pink") +
+  labs(title = "mpg Vs  vehicle weight",
+       x = "mpg",
+       y = "vehicle weight") +  geom_smooth(method = "lm")
+
+```
+
+#with increase in vehicle weight, mpg decreases with a linear trend.
+
+```{r}
+# Analyzing the relationship between Mpg and acceleration
+ggplot(auto, aes(x = mpg, y = acceleration)) +
+  geom_point(color = "pink") +
+  labs(title = "mpg Vs acceleration",
+       x = "mpg",
+       y = "acceleration") +  geom_smooth(method = "lm")
+
+```
+
+#mpg is directly proportional to acceleration. with increase in acceleration mpg also increases.
+
+```{r}
+#Visualization of the relationship between mpg and displacement
+library(ggplot2)
+ggplot(autompg, aes(x = mpg, y = displacement)) +
+  geom_point(color = "pink") +
+  labs(title = "mpg versus displacement",
+       x = "miles per gallon(mpg)",
+       y = "displacement") +  geom_smooth(method = "lm")
+
+
+```
+
+#with increase in displacement mpg decreases.
+
+```{r}
+#Visualization of the relationship between weight and displacement
+library(ggplot2)
+ggplot(autompg, aes(x = weight, y = displacement)) +
+  geom_point(color = "pink") +
+  labs(title = "weight versus displacement",
+       x = "weight",
+       y = "displacement") +  geom_smooth(method = "lm")
+
+
+```
+
+#weight is directly proportional to displacement. with increase in weight, displacement also increases.
+
+```{r}
+boxplot(auto[,1])
+
+```
+```{r}
+boxplot(auto[,3])
+
+```
+```{r}
+boxplot(auto[,4])
+
+```
+
+```{r}
+boxplot(auto[,5])
+
+```
+
+```{r}
+boxplot(auto[,6])
+
+```
+
+#with box plot we can visualize the min , max, mean of each variables.
+
+### Multivariate analysis
+```{r}
+stars(auto)
+```
+
+#with starplot we can immediately identify the vehicles with similarities.
+
+```{r}
+pairs(auto[,1:6])
+```
+```{r}
+library(GGally)
+ggscatmat(auto, columns=1:6)
+```
+
+
+
+```{r}
+#How are the variables related to each other?
+#Compute correlation matrix
+cor_matrix <- cor(auto[, 1:6])
+#Create a heatmap of the correlation matrix
+heatmap(cor_matrix, main = "Heatmap of Correlation Matrix")
+```
+
+
+#To show relationship between multiple variables heatmap is useful.The pale color shows low correlation and the dark color shows high correlation among the variables.
+
+
+
+#considering mpg(miles per gallon) variable for univariate analysis
+
+```{r}
+mpg <- auto$mpg
+
+```
+
+#calculating mean and variance of the mpg variable
+
+```{r}
+mpg_mean <- mean(mpg)
+mpg_mean
+mpg_variance <- var(mpg)
+mpg_variance
+
+```
+
+#Visualization of the mpg distribution
+
+```{r}
+hist(mpg, main = "Distribution of MPG", xlab = "Miles Per Gallon (MPG)", col = "skyblue", border = "black")
+
+```
+
+```{r}
+#Q-Q plot of mpg variable.
+qqnorm(autompg$mpg, main = "QQ Plot of mpg")
+qqline(autompg$mpg)
+
+```
+
+
+#By calculating mean of the mpg variable, we got an insight of the average fuel efficiency of the vehicles in the data set.
+
+#Variance values quantifies the spread of mpg values around the mean. Higher variance in this case indicates greater variability in fuel efficiency among the vehicles.
+
+#Histogram visualization of MPG variable provides a graphical representation of the distribution of fuel efficiency in the dataset.It helps us to identify any potential outliers.
+
+#QQ plot provides an indication of univariate normality of the dataset. In our case, most of the data points fall on the 45-degree reference line stating the data is normally distributed.
+
+#Hence with univariate mean and variance analysis we can access the typical fuel efficiency of vehicles in the dataset.
+--------------------------------------------------------------------------------------------------------------
+
+
+#Multivariate mean and variance analysis
+
+```{r}
+y <- auto[, c(1:6)]
+```
+
+#Calculating mean and covariance
+
+```{r}
+
+auto_colmean <- colMeans(y)
+auto_covariance <- cov(y)
+auto_d <- apply(y, MARGIN = 1, function(y)t(y - auto_colmean) %*% solve(auto_covariance) %*% (y - auto_colmean))
+#mean
+auto_colmean
+```
+
+```{r}
+#covariance
+
+auto_covariance
+
+```
+```{r}
+#Mahalanobis distances for each observation to the vector auto_d.
+auto_d
+```
+
+#The above analysis explains that there is a high negative covariance between mpg and weight which denotes there is a inverse relationship between them. As the weight of the vehicle increases mpg tends to decrease.A the same time mpg and displacement are also negatively related which means as the engine size(displacement) increases mpg tends to decrease.
+
+#Here multivariate mean and variance analysis helped to understand the relationship between different variables.
+
+### PCA
+```{r}
+#dropping non-numeric data
+auto_mpg <- auto[, -7:-9]
+str(auto_mpg)
+```
+
+```{r}
+#Get the correlations between the variables 
+
+cor(auto_mpg, use = "complete.obs")
+```
+
+```{r}
+#Computing Principal Components
+auto_mpg <- na.omit(auto_mpg)
+auto_pca <- prcomp(auto_mpg,scale=TRUE)
+auto_pca
+
+```
+```{r}
+summary(auto_pca)
+```
+
+#summary of auto_pca it's evident that PC1 and PC2 plays an important role as they captures the highest proportion of variance.And we can discard the rest as it contributes less to the overall variance.Vehicles with higher values on PC1 tend to have higher fuel consumption (lower mpg), more cylinders, larger engine displacement, higher horsepower, and greater weight.
+
+
+```{r}
+#eigen values
+eigen_auto <- auto_pca$sdev^2
+names(eigen_auto) <- paste("PC",1:6,sep="")
+eigen_auto
+
+```
+
+```{r}
+sumlambdas <- sum(eigen_auto)
+sumlambdas
+
+```
+
+```{r}
+propvar <- eigen_auto/sumlambdas
+propvar
+
+```
+
+```{r}
+cumvar_auto <- cumsum(propvar)
+cumvar_auto
+
+```
+
+```{r}
+matlambdas <- rbind(eigen_auto,propvar,cumvar_auto)
+rownames(matlambdas) <- c("Eigenvalues","Prop. variance","Cum. prop. variance")
+round(matlambdas,4)
+
+```
+```{r}
+summary(auto_pca)
+
+```
+
+
+```{r}
+auto_pca$rotation
+
+```
+```{r}
+print(auto_pca)
+
+```
+
+#Screeplot
+```{r}
+screeplot(auto_pca, type = "line")
+```
+
+#variate representation of PC1
+```{r}
+#Graph PC1 and PC2 using x of prcomp()
+plot(auto_pca$x[,1],auto_pca$x[,2])
+```
+
+```{r}
+#Let's see how much variation in the original data PC1 accounts for
+pc1.var <- auto_pca$sdev^2
+pc1.var
+```
+
+```{r}
+#percentage of variation that PC1 accounts for
+pc1.var.per <- round(pc1.var/sum(pc1.var)*100, 1)
+pc1.var.per
+```
+
+```{r}
+#using bar plot to visualize the above percentage
+barplot(pc1.var.per, main="Scree Plot", xlab="Principal Component", ylab="Percent Variation")
+```
+
+
+#PC1 accounts for almost all the variation in the data this means that there is a big difference between the PC1 and PC2 clusters
+
+
+#Visualization
+
+```{r}
+#Visualizing PC's and the variation
+
+pca.data <- data.frame(Sample=rownames(auto_pca$x),
+  X=auto_pca$x[,1],
+  Y=auto_pca$x[,2])
+pca.data
+```
+
+```{r}
+#ggplot
+ggplot(data=pca.data, aes(x=X, y=Y, label=".")) +
+  geom_text() +
+  xlab(paste("PC1 - ", pc1.var.per[1], "%", sep="")) +
+  ylab(paste("PC2 - ", pc1.var.per[2], "%", sep="")) +
+  theme_bw() +
+  ggtitle("PCA Graph")
+ 
+```
+
+#PC1 accounts for 79.8% of variation in the original data
+#PC2 accounts for 12.1% of variation in the original data
+
+```{r}
+#eigen values
+eigen_auto <- auto_pca$sdev^2
+eigen_auto
+plot(log(eigen_auto), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
+
+ 
+```
+
+```{r}
+library(corrplot)
+library(factoextra)
+fviz_eig(auto_pca, addlabels = TRUE)
+
+```
+
+
+```{r}
+library(factoextra)
+fviz_pca_var(auto_pca,col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+
+```
+
+
+### Factor Analysis
+```{r}
+# load library for factor analysis
+library(ggplot2)
+library(psych)
+
+```
+```{r}
+data <- auto[,1:6]
+#To answer question 1 we perform Parallel analysis Scree Plots
+fa.parallel(data)
+```
+
+#Output:Parallel analysis suggests that the number of factors =  2  and the number of components =  1
+#From the above two factors are ideal for the autompg dataset
+
+
+#Explain the output for your factor model?
+```{r}
+fit.pc <- principal(data, nfactors=2, rotate="varimax")
+fit.pc
+```
+
+#High absolute values (close to 1) indicate a strong relationship between the variable and the factor.
+#Example: For displacement variable, among the two factors (RC1,RC2), RC1 is having high absolute value so we can conclude that displacement variable is explained better by RC1. Like this we can analyze the relationship between the variables and the factors.
+
+#h2 explains how much variance of the variables are explained by the factors.
+#Example: For displacement variable, 0.950 of it's variance is explained by the factors 
+
+#u2 indicates the amount of variance not explained by the factors
+#Example: For displacement variable, 0.049 of it's variance is unique and not explained by the factors.
+
+#Principal Components Analysis
+Call: principal(r = data, nfactors = 2, rotate = "varimax")
+Standardized loadings (pattern matrix) based upon correlation matrix
+
+                       RC1  RC2
+SS loadings           3.99 1.53
+Proportion Var        0.66 0.25
+Cumulative Var        0.66 0.92
+Proportion Explained  0.72 0.28
+Cumulative Proportion 0.72 1.00
+
+Mean item complexity =  1.3
+Test of the hypothesis that 2 components are sufficient.
+
+The root mean square of the residuals (RMSR) is  0.03 
+ with the empirical chi square  11.49  with prob <  0.022 
+
+Fit based upon off diagonal values = 1
+
+```{r}
+round(fit.pc$values, 3)
+```
+
+```{r}
+fit.pc$loadings
+```
+```{r}
+# Communalities
+fit.pc$communality
+
+```
+
+```{r}
+# Rotated factor scores, Notice the columns ordering: RC1, RC3, RC2 and RC4
+fit.pc$scores
+
+```
+
+```{r}
+fa.plot(fit.pc) # See Correlations within Factors
+
+```
+
+
+#Show the columns that go into each factor?
+```{r}
+fa.diagram(fit.pc) # Visualize the relationship
+
+```
+
+#From the above we can infer that weight,displacement,cylinders,mpg are well explained by RC1 and acceleration is explained better by RC2.
+
+#Perform some visualizations using the factors?
+
+```{r}
+#very simple structure visualization
+vss(data)
+
+```
+
+```{r}
+# Computing Correlation Matrix
+corrm.auto <- cor(data)
+corrm.auto
+
+```
+```{r}
+plot(corrm.auto)
+
+```
+
+```{r}
+auto_pca <- prcomp(data, scale=TRUE)
+summary(auto_pca)
+
+```
+```{r}
+plot(auto_pca)
+
+```
+
+
+#Biplot Visualization
+```{r}
+biplot(fit.pc)
+
+```
+
+
+### Clustering
+```{r}
+#load necessary libraries
+library(magrittr)
+library(NbClust)
+library(cluster)
+library(factoextra)
+
+
+```
+
+```{r}
+
+#Hierarchical Clustering- Dendrogram
+auto_featured <- auto[, c("mpg","horsepower", "weight", "acceleration")]
+auto_clust <- auto_featured
+auto_mpg_scaled <- scale(auto_clust)
+dist_matrix <- dist(auto_mpg_scaled)
+
+
+```
+
+
+
+
+
+```{r}
+#Default Clustering
+
+hc <- hclust(dist_matrix)
+plot(hc, hang = -1, cex = 0.6, main = "Dendrogram for Hierarchical Clustering")
+
+```
+
+
+
+
+
+
+
+```{r}
+#Average Clustering
+
+hc <- hclust(dist_matrix,method = "average")
+plot(hc, hang = -1, cex = 0.6, main = "Dendrogram for Hierarchical Clustering")
+
+```
+
+#By observing the above dendrogram's k=2 clusters will be sufficient.This is confirmed further with D index graphical representation.
+
+
+```{r}
+
+num_clusters <- 2
+clusters <- cutree(hc, k = num_clusters)
+
+# Membership for each cluster
+table(clusters)
+
+# Visualize cluster and membership using first two Principal Components
+pca_result <- prcomp(auto_mpg_scaled,scale=TRUE)
+fviz_cluster(list(data = pca_result$x[,1:2], cluster = clusters))
+
+
+```
+
+
+```{r}
+#Non-Hierarchical Clustering(k-means)
+num_clusters <- 2
+kmeans_model <- kmeans(auto_mpg_scaled, centers = num_clusters)
+
+# Membership for each cluster
+table(kmeans_model$cluster)
+
+```
+
+
+
+
+```{r}
+# Visualize cluster centers for k-means
+fviz_cluster(kmeans_model, data = auto_mpg_scaled, geom = "point", frame.type = "convex", 
+             pointsize = 2, fill = "white", main = "K-means Cluster Centers")
+
+
+
+```
+
+
+
+```{r}
+# Visualize cluster and membership using first two Principal Components for k-means
+pca_result <- prcomp(auto_mpg_scaled, scale = TRUE)
+fviz_cluster(kmeans_model, data = pca_result$x[, 1:2], geom = "point", 
+             pointsize = 2, fill = "white", main = "K-means Clustering Result (PCA)")
+
+
+
+```
+
+```{r}
+library(cluster)
+library(factoextra)
+# Calculate silhouette information for k-means clustering
+sil <- silhouette(kmeans_model$cluster, dist(auto_mpg_scaled))
+
+# Visualize the silhouette plot for k-means clustering
+fviz_silhouette(sil, main = "Silhouette Plot for K-means Clustering")
+
+
+
+```
+```{r}
+# Create a data frame with cluster membership
+data_clustered <- cbind(auto_clust, Cluster = kmeans_model$cluster)
+
+# Scatter plot of data points colored by cluster membership
+plot(data_clustered$mpg, data_clustered$horsepower,
+     col = data_clustered$Cluster, pch = 16, 
+     xlab = "mpg", ylab = "horsepower",
+     main = "Scatter Plot of Clustering")
+
+
+
+
+```
+
+
+
+```{r}
+res.hc <- auto_featured %>% scale() %>% dist(method = "euclidean") %>%
+  hclust(method = "ward.D2")
+
+fviz_dend(res.hc,
+          cex = 0.5)
+
+
+
+```
+```{r}
+res.nbclust <- auto_featured %>% scale() %>% NbClust(distance = "euclidean", min.nc = 2, max.nc = 10, method = "complete", index ="all") 
+
+
+
+```
+#The D index is a graphical method of determining the number of clusters. 
+
+
+
+### 3.Application of different MVA models and 4 model insights
+
+### Multiple Regression
+###Model Development
+```{r}
+
+# Performing multiple regression on the dataset
+fit <- lm(mpg~ cylinders+displacement+horsepower+weight+acceleration, data=auto)
+#show the results
+summary(fit)
+```
+
+###In this step, we loaded the auto-mpg dataset and fitted a multiple regression model using the lm() function. The model predicts the "mpg" (miles per gallon) based on several predictor variables: cylinders, displacement, horsepower, weight, acceleration.
+
+###Model Acceptance
+###From the summary Pr column it is evident that weight and horsepower are the two most significant variables. R-squared value explains the fact that cylinders,displacement,horsepower,weight, acceleration variables contribute to the 70% of total variance,which is not bad. p-value< 2.2e-16 is significant so the model is acceptable.
+
+```{r}
+coefficients(fit)
+```
+
+###From the above we get information about the dependent variable mpg in equation form y=b0+ b1x1 + b2x2+...+bnxn where intercept b0=4.626431e+01, and cofficients b1=-3.979284e-01,....
+
+```{r}
+confint(fit,level=0.95)
+```
+```{r}
+fitted(fit)
+```
+
+###Residual Analysis
+
+```{r}
+plot(fit, which=1) # Residuals vs Fitted
+plot(fit, which=2) # Normal Q-Q plot
+
+```
+
+```{r}
+residuals <- residuals(fit)
+```
+
+```{r}
+#Plot residuals against fitted values to check for homoscedasticity
+plot_resid_fitted <- ggplot() +
+  geom_point(aes(x = fitted(fit), y = residuals)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(x = "Fitted Values", y = "Residuals",
+       title = "Residuals vs Fitted Values Plot") +
+  theme_minimal()
+print(plot_resid_fitted)
+
+```
+
+
+#The residual vs. fitted plot is a tool used to evaluate the assumptions and adequacy of a regression model. It helps to identify whether the model adequately captures the underlying relationships in the data or if there are issues that need to be addressed.
+#The plot shows a pattern of points around zero, the model is not appropriate.
+
+
+###Prediction
+
+```{r}
+predict.lm(fit, data.frame(cylinders=8, displacement=310, horsepower=170, weight=4300,
+    acceleration=9) )
+```
+
+
+##Here when random values are given to the independent variables cylinders,displacement, horsepower, weight and acceleration, the model predicted the dependent variable mpg would be 12.79.
+
+
+###Model Accuracy
+```{r}
+#Make predictions using the model
+predicted <- predict(fit, newdata = auto)
+```
+
+```{r}
+#Calculating RMSE by taking the square root of the mean of the squared differences between the actual values (auto$mpg) and the predicted values (predicted)
+rmse <- sqrt(mean((auto$mpg - predicted)^2))
+rmse
+```
+
+#RMSE measures the average deviation of predicted from actual values.
+
+#Conclusion: Here the moderate RMSE value 4.21 suggests that the model is having resonable accuracy but with noticeable deviations from actual values.
+
+###Some Visualizations
+
+```{r}
+library(car)
+#Nonlinearity
+# component + residual plot
+crPlots(fit)
+```
+
+
+
+```{r}
+# plot studentized residuals vs. fitted values
+library(car)
+spreadLevelPlot(fit)
+```
+
+
+
+### Logistic Regression
+```{r}
+#Load required Libraries
+library(dplyr)
+library(tidyr)
+library(MASS)
+```
+
+
+###Model Development
+```{r}
+# Create binary outcome variable: high mpg (1) vs. low mpg (0)
+autompg <- auto %>%
+  mutate(new_mpg = ifelse(mpg > median(mpg), 1, 0))
+```
+
+```{r}
+# Performing logistic regression on the dataset
+logistic_simple <- glm(new_mpg ~ cylinders + displacement + horsepower + weight + acceleration, data = autompg, family = binomial)
+
+```
+#Considering the dependent variable mpg in binary format new_mpg and building the model with the independent variables namely cylinders,displacement,horsepower,weight and acceleration.
+
+
+###Model Acceptance
+```{r}
+summary(logistic_simple)
+```
+
+#The estimate column gives the coefficients that represent the log odds of the outcome variable (new_mpg) for one-unit increase in the predictor variable, holding other variables constant.
+
+#For example: The coefficient for horsepower(-0.05) indicates the change in the outcome variable(new_mpg) for one unit increase in horsepower, holding other variables constant. And from the above it is evident that horsepower is the only one variable which is statistically significant. Other variables may not have a significant effect on mpg.
+
+#The null deviance (543.43) represents the deviance when only the intercept is included in the model.
+
+#The residual deviance (206.80) represents the deviance after fitting the logistic regression model with the predictor variables. Here the model is moderately acceptable.Generally,Smaller residual deviance indicates good fit.
+
+
+
+###Residual Analysis
+```{r}
+residuals(logistic_simple)
+```
+```{r}
+plot(logistic_simple, which = 1)
+```
+
+#There is a fixed pattern in the residuals vs fitted plot which means that the selected independent variables will not explain the dependent variable well.
+
+###Prediction
+
+```{r}
+# Make predictions on the same dataset
+predicted_values <- predict(logistic_simple, type = "response")
+```
+
+
+```{r}
+# Convert predicted probabilities to binary predictions (0 or 1) based on a threshold 0.5
+predicted_class <- ifelse(predicted_values > 0.5, 1, 0)
+predicted_class
+```
+
+###Accuracy
+
+#we can compute accuracy by comparing predicted values with the original data
+
+```{r}
+original <- autompg$new_mpg  # Assuming new_mpg contains binary response variable (0 or 1)
+accuracy <- mean(predicted_class == original)
+print(accuracy)
+
+
+```
+
+
+#Accuracy Provides an overall measure of model performance. An accuracy of 0.716 indicates that the logistic regression model correctly predicted the outcome (the value of new_mpg) approximately 71.6% correctly.
+
+
+###Visualizations
+```{r}
+# Install pROC package (only need to run once)
+#install.packages("pROC")
+
+# Load the pROC package
+library(pROC)
+```
+```{r}
+autompg$new_mpg
+```
+```{r}
+length(autompg$new_mpg)
+length(predicted_class)
+```
+
+
+```{r}
+common <- intersect(seq_along(original), seq_along(predicted_class))
+```
+
+
+```{r}
+# Compute ROC curve for the logistic regression model
+roc_curve <- roc(original[common], predicted_class[common])
+
+# Plot ROC curve
+plot(roc_curve, legacy.axes = TRUE, main = "ROC Curve for Logistic Regression Model")
+```
+
+
+```{r}
+roc(original[common],predicted_class[common],plot=TRUE, legacy.axes=TRUE, xlab="False Positive Percentage", ylab="True Postive Percentage", col="#377eb8", lwd=4, percent=TRUE, print.auc=TRUE, partial.auc=c(100, 90), auc.polygon = TRUE, auc.polygon.col = "#377eb822", print.auc.x=45)
+```
+
+
+#ROC curves are typically used to evaluate the performance of binary classification models, where the predicted classes represent binary outcomes (e.g., positive/negative, yes/no). Since the auto-mpg dataset involves predicting a continuous outcome (mpg), using a ROC curve isn't appropriate.
+
+### Discriminant Analysis
+```{r}
+# Creating a categorical column for the predictor variable autompg based on a threshold.
+auto$mpg_class <- ifelse(auto$mpg > 20, "High MPG", "Low MPG")
+```
+
+
+```{r}
+# Splitting the dataset into 75% training and 25% test sets
+smp_size_raw <- floor(0.75 * nrow(auto))
+train_ind_raw <- sample(nrow(auto), size = smp_size_raw)
+train_raw.df <- auto[train_ind_raw, ]
+test_raw.df <- auto[-train_ind_raw, ]
+```
+
+###Model Development
+```{r}
+#install.packages("MASS")
+library(MASS)
+#Fitting LDA model on the training set
+lda_model <- lda(mpg_class ~ cylinders + displacement + horsepower + weight + acceleration, data = train_raw.df)
+lda_model
+```
+
+#Prior Probabilities denote proportion of each class before modelling in our case high-mpg is more prevalent in the training set.
+#Faster acceleration is seen in high-mpg vehicles and heavy weight vehicles have low-mpg.
+#vehicles with more cylinders, larger displacement, higher horsepower, and heavier weight tend to be in the 'Low MPG' class. Vehicles with quicker acceleration tend to be in the 'High MPG' class
+#Cylinders is the most significant coefficient.The coefficients suggest which variables most strongly contribute to classifying 'Low MPG' and 'High MPG'.
+
+###Model Acceptance
+```{r}
+summary(lda_model)
+
+```
+
+#with significant coefficients and no obvious issues with class imbalance, the LDA model is likely acceptable. Here only cylinders variable plays a vital role. LDA model is moderately acceptable.
+
+```{r}
+plot(lda_model,dimen = 1, type = "b")
+
+```
+
+```{r}
+plot(lda_model)
+
+```
+
+###Residual Analysis
+```{r}
+# Residual Analysis 
+residuals(lda_model)
+
+```
+
+
+#LDA generally won't have any residuals
+
+###Prediction
+```{r}
+prediction <- predict(lda_model, test_raw.df)
+prediction
+```
+
+#This prediction given us an idea about how the model classifies the test data.
+
+###Model Accuracy
+```{r}
+# Predict on the test set
+predicted_classes <- predict(lda_model, test_raw.df)$class
+
+# Create a confusion matrix to understand misclassifications
+confusion_matrix <- table(predicted_classes, test_raw.df$mpg_class)
+confusion_matrix 
+
+accuracy <- sum(predicted_classes == test_raw.df$mpg_class) / nrow(test_raw.df)
+accuracy 
+
+```
+
+#This model gives 84% accuracy for the autompg dataset with high-mpg and low-mpg labels which is a good sign.
+
+###Visualizations
+```{r}
+str(train_raw.df)
+#install.packages("klaR") 
+library(klaR)
+
+```
+
+
+### 5.Learnings and Takeaways
+
+#summarizing the key learnings and takeaways from the analysis:
+
+#Trends in Fuel Efficiency: Higher cylinder count, greater horsepower, and heavier vehicles generally result in lower MPG.
+
+#Predictive Capability: The linear regression model provides a reasonable level of accuracy in predicting MPG based on vehicle characteristics.
+
+#Impact on Environmental Policies: Insights from this dataset can help inform fuel economy standards and influence automotive design towards more efficient vehicles.
+
